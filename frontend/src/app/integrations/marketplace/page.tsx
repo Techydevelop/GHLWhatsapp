@@ -200,7 +200,7 @@ export default function MarketplaceIntegrationPage() {
           {/* Features */}
           <div className="space-y-6">
             <div className="card p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">What You'll Get</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">What You&apos;ll Get</h3>
               <ul className="space-y-3">
                 <li className="flex items-start">
                   <CheckCircleIcon className="w-5 h-5 text-green-500 mt-0.5 mr-3 flex-shrink-0" />
@@ -233,7 +233,7 @@ export default function MarketplaceIntegrationPage() {
                     <span className="text-primary-600 text-sm font-medium">1</span>
                   </div>
                   <div className="ml-3">
-                    <p className="text-gray-600">Click "Connect Account" to authorize with LeadConnector</p>
+                    <p className="text-gray-600">Click &quot;Connect Account&quot; to authorize with LeadConnector</p>
                   </div>
                 </div>
                 <div className="flex items-start">
