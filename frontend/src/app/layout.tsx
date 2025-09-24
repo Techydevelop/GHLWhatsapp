@@ -1,26 +1,33 @@
-import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
-import './globals.css'
-import { Toaster } from 'react-hot-toast'
+import type { Metadata } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
+import "./globals.css";
+import { Toaster } from 'react-hot-toast';
 
-const inter = Inter({ subsets: ['latin'] })
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
 
 export const metadata: Metadata = {
-  title: 'WhatsApp + LeadConnector Integration',
-  description: 'Production-ready WhatsApp integration with GoHighLevel LeadConnector',
-  keywords: ['WhatsApp', 'GoHighLevel', 'LeadConnector', 'Integration', 'CRM'],
-  authors: [{ name: 'WhatsApp Integration Team' }],
-  viewport: 'width=device-width, initial-scale=1',
-}
+  title: "WhatsApp + LeadConnector Integration",
+  description: "Production-ready WhatsApp integration with GoHighLevel LeadConnector",
+};
 
 export default function RootLayout({
   children,
-}: {
-  children: React.ReactNode
-}) {
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
         {children}
         <Toaster
           position="top-right"
@@ -48,5 +55,5 @@ export default function RootLayout({
         />
       </body>
     </html>
-  )
+  );
 }
