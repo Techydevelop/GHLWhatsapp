@@ -14,13 +14,6 @@ import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import ConnectSubaccountForm from '@/components/ConnectSubaccountForm'
 import AuthWrapper from '@/components/AuthWrapper'
 
-// Force dynamic rendering
-export const dynamic = 'force-dynamic'
-export const revalidate = 0
-export const fetchCache = 'force-no-store'
-export const runtime = 'nodejs'
-export const preferredRegion = 'auto'
-
 const API_URL = process.env.NEXT_PUBLIC_API_URL
 
 interface Subaccount {
@@ -365,7 +358,8 @@ export default function DashboardPage() {
   )
 }
 
-// Ensure this page is never statically generated
-export async function generateStaticParams() {
-  return []
-}
+// Force dynamic rendering
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+export const fetchCache = 'force-no-store'
+export const runtime = 'nodejs'

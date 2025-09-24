@@ -7,12 +7,6 @@ import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline'
 import toast from 'react-hot-toast'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 
-// Force dynamic rendering
-export const dynamic = 'force-dynamic'
-export const revalidate = 0
-export const fetchCache = 'force-no-store'
-export const runtime = 'nodejs'
-
 export default function SignupPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -204,7 +198,8 @@ export default function SignupPage() {
   )
 }
 
-// Ensure this page is never statically generated
-export async function generateStaticParams() {
-  return []
-}
+// Force dynamic rendering
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+export const fetchCache = 'force-no-store'
+export const runtime = 'nodejs'
