@@ -10,9 +10,7 @@ import {
   ClockIcon
 } from '@heroicons/react/24/outline'
 import toast from 'react-hot-toast'
-import SubaccountList from '@/components/SubaccountList'
 import ConnectSubaccountForm from '@/components/ConnectSubaccountForm'
-import ChatPane from '@/components/ChatPane'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL
 
@@ -33,7 +31,6 @@ interface Subaccount {
 export default function DashboardPage() {
   const [subaccounts, setSubaccounts] = useState<Subaccount[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const [selectedSubaccount, setSelectedSubaccount] = useState<Subaccount | null>(null)
   const [showConnectForm, setShowConnectForm] = useState(false)
 
   useEffect(() => {
@@ -269,13 +266,9 @@ export default function DashboardPage() {
                         </button>
                       )}
                       {subaccount.session.status === 'ready' && (
-                        <button
-                          onClick={() => setSelectedSubaccount(subaccount)}
-                          className="btn-success w-full text-sm"
-                        >
-                          <ChatBubbleLeftRightIcon className="w-4 h-4 mr-2" />
-                          Open Chat
-                        </button>
+                        <div className="text-center text-green-600 text-sm font-medium">
+                          ✅ WhatsApp Connected
+                        </div>
                       )}
                     </>
                   ) : (
@@ -309,13 +302,6 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {/* Chat Pane */}
-        {selectedSubaccount && (
-          <ChatPane
-            subaccount={selectedSubaccount}
-            onClose={() => setSelectedSubaccount(null)}
-          />
-        )}
       </main>
     </div>
   )
