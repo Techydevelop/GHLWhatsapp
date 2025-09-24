@@ -3,25 +3,34 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { LinkIcon, CheckCircleIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline'
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import toast from 'react-hot-toast'
+import AuthWrapper from '@/components/AuthWrapper'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL
 
-export default function MarketplaceIntegrationPage() {
+function MarketplaceIntegrationContent() {
   const [isConnecting, setIsConnecting] = useState(false)
   const [isConnected, setIsConnected] = useState(false)
   const [accountInfo, setAccountInfo] = useState<any>(null)
+  const [user, setUser] = useState<any>(null)
   const router = useRouter()
+  const supabase = createClientComponentClient()
 
   useEffect(() => {
-    // Check if user is already connected
+    getUser()
     checkConnectionStatus()
   }, [])
 
+  const getUser = async () => {
+    const { data: { user } } = await supabase.auth.getUser()
+    setUser(user)
+  }
+
   const checkConnectionStatus = async () => {
     try {
-      // In a real app, you'd get the user ID from authentication
-      const userId = 'temp-user-id' // This should come from your auth system
+      if (!user) return
+      const userId = user.id
       
       const response = await fetch(`${API_URL}/auth/account?user_id=${userId}`)
       
@@ -39,12 +48,17 @@ export default function MarketplaceIntegrationPage() {
     setIsConnecting(true)
     
     try {
+      if (!user) {
+        toast.error('Please log in to continue')
+        return
+      }
+
       // Generate a unique return URL
       const returnUrl = `${window.location.origin}/dashboard`
       
       // Open OAuth popup
       const popup = window.open(
-        `${API_URL}/auth/connect?return_url=${encodeURIComponent(returnUrl)}&user_id=temp-user-id`,
+        `${API_URL}/auth/connect?return_url=${encodeURIComponent(returnUrl)}&user_id=${user.id}`,
         'marketplace-oauth',
         'width=600,height=700,scrollbars=yes,resizable=yes'
       )
@@ -274,5 +288,13 @@ export default function MarketplaceIntegrationPage() {
         </div>
       </main>
     </div>
+  )
+}
+
+export default function MarketplaceIntegrationPage() {
+  return (
+    <AuthWrapper>
+      <MarketplaceIntegrationContent />
+    </AuthWrapper>
   )
 }

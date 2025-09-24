@@ -20,11 +20,11 @@ export default function HomePage() {
               </div>
             </div>
             <div className="flex items-center space-x-4">
-              <Link href="/integrations/marketplace" className="btn-outline">
-                Connect Account
+              <Link href="/login" className="btn-outline">
+                Login
               </Link>
-              <Link href="/dashboard" className="btn-primary">
-                Dashboard
+              <Link href="/signup" className="btn-primary">
+                Get Started
               </Link>
             </div>
           </div>
@@ -44,14 +44,14 @@ export default function HomePage() {
           </p>
           <div className="mt-5 max-w-md mx-auto sm:flex sm:justify-center md:mt-8">
             <div className="rounded-md shadow">
-              <Link href="/integrations/marketplace" className="btn-primary w-full flex items-center justify-center px-8 py-3 text-base">
+              <Link href="/signup" className="btn-primary w-full flex items-center justify-center px-8 py-3 text-base">
                 Get Started
                 <ArrowRightIcon className="ml-2 w-5 h-5" />
               </Link>
             </div>
             <div className="mt-3 rounded-md shadow sm:mt-0 sm:ml-3">
-              <Link href="/dashboard" className="btn-outline w-full flex items-center justify-center px-8 py-3 text-base">
-                View Dashboard
+              <Link href="/login" className="btn-outline w-full flex items-center justify-center px-8 py-3 text-base">
+                Login
               </Link>
             </div>
           </div>
@@ -154,8 +154,8 @@ export default function HomePage() {
               Connect your WhatsApp Business with LeadConnector today
             </p>
             <div className="mt-8">
-              <Link href="/integrations/marketplace" className="btn bg-white text-primary-600 hover:bg-gray-50 px-8 py-3 text-lg">
-                Connect Now
+              <Link href="/signup" className="btn bg-white text-primary-600 hover:bg-gray-50 px-8 py-3 text-lg">
+                Get Started
                 <ArrowRightIcon className="ml-2 w-5 h-5" />
               </Link>
             </div>

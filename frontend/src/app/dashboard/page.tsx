@@ -10,7 +10,9 @@ import {
   ClockIcon
 } from '@heroicons/react/24/outline'
 import toast from 'react-hot-toast'
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import ConnectSubaccountForm from '@/components/ConnectSubaccountForm'
+import AuthWrapper from '@/components/AuthWrapper'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL
 
@@ -28,20 +30,32 @@ interface Subaccount {
   }
 }
 
-export default function DashboardPage() {
+function DashboardContent() {
   const [subaccounts, setSubaccounts] = useState<Subaccount[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [showConnectForm, setShowConnectForm] = useState(false)
+  const [user, setUser] = useState<any>(null)
+  const supabase = createClientComponentClient()
 
   useEffect(() => {
+    getUser()
     loadSubaccounts()
   }, [])
+
+  const getUser = async () => {
+    const { data: { user } } = await supabase.auth.getUser()
+    setUser(user)
+  }
 
   const loadSubaccounts = async () => {
     try {
       setIsLoading(true)
-      // In a real app, you'd get the auth token from your auth system
-      const token = 'temp-token' // This should come from your auth system
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) {
+        toast.error('Please log in to continue')
+        return
+      }
+      const token = session.access_token
       
       const response = await fetch(`${API_URL}/admin/subaccounts`, {
         headers: {
@@ -65,7 +79,12 @@ export default function DashboardPage() {
 
   const handleConnectSubaccount = async (locationId: string, name?: string) => {
     try {
-      const token = 'temp-token' // This should come from your auth system
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) {
+        toast.error('Please log in to continue')
+        return
+      }
+      const token = session.access_token
       
       const response = await fetch(`${API_URL}/admin/subaccounts/connect`, {
         method: 'POST',
@@ -93,7 +112,12 @@ export default function DashboardPage() {
 
   const handleCreateSession = async (locationId: string) => {
     try {
-      const token = 'temp-token' // This should come from your auth system
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) {
+        toast.error('Please log in to continue')
+        return
+      }
+      const token = session.access_token
       
       const response = await fetch(`${API_URL}/location/${locationId}/session`, {
         method: 'POST',
@@ -118,6 +142,16 @@ export default function DashboardPage() {
   const handleOpenQR = (locationId: string) => {
     const qrUrl = `${API_URL}/provider?locationId=${locationId}`
     window.open(qrUrl, '_blank', 'width=600,height=700')
+  }
+
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut()
+      toast.success('Logged out successfully')
+    } catch (error) {
+      console.error('Logout error:', error)
+      toast.error('Failed to log out')
+    }
   }
 
   const getStatusIcon = (status: string) => {
@@ -178,6 +212,9 @@ export default function DashboardPage() {
               </div>
             </div>
             <div className="flex items-center space-x-4">
+              <div className="text-sm text-gray-600">
+                Welcome, {user?.email}
+              </div>
               <a href="/" className="btn-outline">
                 Back to Home
               </a>
@@ -187,6 +224,12 @@ export default function DashboardPage() {
               >
                 <PlusIcon className="w-4 h-4 mr-2" />
                 Connect Location
+              </button>
+              <button
+                onClick={handleLogout}
+                className="btn-outline text-red-600 border-red-300 hover:bg-red-50"
+              >
+                Logout
               </button>
             </div>
           </div>
@@ -304,5 +347,13 @@ export default function DashboardPage() {
 
       </main>
     </div>
+  )
+}
+
+export default function DashboardPage() {
+  return (
+    <AuthWrapper>
+      <DashboardContent />
+    </AuthWrapper>
   )
 }
