@@ -123,8 +123,8 @@ NEXT_PUBLIC_API_URL=https://your-backend-domain.com
    - Select the repository: `GHLWhatsapp`
 
 2. **Configure Build Settings**:
-   - **Build Command**: `npm run build:backend`
-   - **Start Command**: `npm run start:backend`
+   - **Build Command**: `cd backend && npm install && npm run build`
+   - **Start Command**: `cd backend && npm start`
    - **Node Version**: 18 (or latest)
 
 3. **Set Environment Variables**:
