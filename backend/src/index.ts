@@ -57,7 +57,7 @@ app.use('/messages', messageRoutes);
 app.use('/provider', providerRoutes);
 
 // Error handling middleware
-app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
+app.use((err: any, req: any, res: any, next: any) => {
   console.error('Unhandled error:', err);
   res.status(500).json({ 
     error: 'Internal server error',
@@ -66,7 +66,7 @@ app.use((err: Error, req: express.Request, res: express.Response, next: express.
 });
 
 // 404 handler
-app.use('*', (req, res) => {
+app.use('*', (req: any, res: any) => {
   res.status(404).json({ error: 'Route not found' });
 });
 

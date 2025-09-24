@@ -3,6 +3,9 @@ import { supabase } from '../config/database';
 
 export interface AuthenticatedRequest extends Request {
   user_id?: string;
+  body?: any;
+  params?: any;
+  query?: any;
 }
 
 /**
