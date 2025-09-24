@@ -114,12 +114,22 @@ NEXT_PUBLIC_API_URL=https://your-backend-domain.com
 
 ### Backend Deployment (Render/Railway/VPS)
 
-1. **Deploy to Render**:
-   ```bash
-   # Connect your GitHub repository to Render
-   # Set environment variables in Render dashboard
-   # Deploy as a Web Service
-   ```
+#### **Render Deployment Steps:**
+
+1. **Create New Web Service**:
+   - Go to [Render Dashboard](https://dashboard.render.com)
+   - Click **New** → **Web Service**
+   - Connect your GitHub repository
+   - Select the repository: `GHLWhatsapp`
+
+2. **Configure Build Settings**:
+   - **Build Command**: `npm run build:backend`
+   - **Start Command**: `npm run start:backend`
+   - **Node Version**: 18 (or latest)
+
+3. **Set Environment Variables**:
+   - Add all environment variables from `backend/env.example`
+   - Set `MARKETPLACE_REDIRECT_URI` to your Render URL: `https://your-app-name.onrender.com/auth/callback`
 
 2. **Deploy to Railway**:
    ```bash
