@@ -5,6 +5,9 @@ import { useRouter } from 'next/navigation'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { User } from '@supabase/supabase-js'
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic'
+
 interface AuthWrapperProps {
   children: React.ReactNode
 }

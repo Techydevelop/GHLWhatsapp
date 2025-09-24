@@ -14,6 +14,9 @@ import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import ConnectSubaccountForm from '@/components/ConnectSubaccountForm'
 import AuthWrapper from '@/components/AuthWrapper'
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic'
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL
 
 interface Subaccount {
