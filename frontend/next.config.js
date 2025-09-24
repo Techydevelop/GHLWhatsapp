@@ -9,6 +9,10 @@ const nextConfig = {
   // Ensure proper dynamic rendering for auth pages
   trailingSlash: false,
   skipTrailingSlashRedirect: true,
+  // Disable static optimization
+  output: 'standalone',
+  // Force dynamic rendering
+  generateStaticParams: false,
 }
 
 module.exports = nextConfig

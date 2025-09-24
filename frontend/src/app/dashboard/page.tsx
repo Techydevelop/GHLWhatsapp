@@ -16,6 +16,10 @@ import AuthWrapper from '@/components/AuthWrapper'
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic'
+export const revalidate = 0
+export const fetchCache = 'force-no-store'
+export const runtime = 'nodejs'
+export const preferredRegion = 'auto'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL
 
@@ -359,4 +363,9 @@ export default function DashboardPage() {
       <DashboardContent />
     </AuthWrapper>
   )
+}
+
+// Ensure this page is never statically generated
+export async function generateStaticParams() {
+  return []
 }

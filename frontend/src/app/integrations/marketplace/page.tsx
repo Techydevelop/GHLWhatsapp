@@ -13,6 +13,9 @@ import AuthWrapper from '@/components/AuthWrapper'
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic'
+export const revalidate = 0
+export const fetchCache = 'force-no-store'
+export const runtime = 'nodejs'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL
 
@@ -308,4 +311,9 @@ export default function MarketplacePage() {
       <MarketplaceContent />
     </AuthWrapper>
   )
+}
+
+// Ensure this page is never statically generated
+export async function generateStaticParams() {
+  return []
 }
