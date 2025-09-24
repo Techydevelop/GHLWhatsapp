@@ -20,6 +20,7 @@
     "autoprefixer": "^10.4.16",
     "postcss": "^8.4.32",
     "lucide-react": "^0.294.0",
+    "@heroicons/react": "^2.0.18",
     "axios": "^1.6.2",
     "react-hot-toast": "^2.4.1",
     "clsx": "^2.0.0"
