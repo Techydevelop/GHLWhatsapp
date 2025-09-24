@@ -35,7 +35,7 @@ export default function SignupPage() {
       await new Promise(resolve => setTimeout(resolve, 1000))
       toast.success('Account created successfully!')
       router.push('/login')
-    } catch (error) {
+    } catch {
       toast.error('Signup failed')
     } finally {
       setIsLoading(false)

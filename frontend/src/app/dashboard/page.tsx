@@ -13,7 +13,14 @@ import {
 import toast from 'react-hot-toast'
 
 export default function DashboardPage() {
-  const [subaccounts, setSubaccounts] = useState([
+  const [subaccounts, setSubaccounts] = useState<Array<{
+    id: string;
+    location_id: string;
+    name: string;
+    status: string;
+    phone_number: string | null;
+    created_at: string;
+  }>>([
     {
       id: '1',
       location_id: 'LOC123',
@@ -38,7 +45,7 @@ export default function DashboardPage() {
       location_id: newLocationId.trim(),
       name: newName.trim() || `Location ${newLocationId}`,
       status: 'qr',
-      phone_number: null,
+      phone_number: null as string | null,
       created_at: new Date().toISOString()
     }
 
@@ -49,12 +56,12 @@ export default function DashboardPage() {
     toast.success('Subaccount connected successfully!')
   }
 
-  const handleCreateSession = (locationId: string) => {
+  const handleCreateSession = () => {
     toast.success('WhatsApp session created! Check the QR page to connect.')
   }
 
   const handleOpenQR = (locationId: string) => {
-    toast.info(`Opening QR page for location: ${locationId}`)
+    toast(`Opening QR page for location: ${locationId}`)
   }
 
   const getStatusIcon = (status: string) => {
@@ -170,7 +177,7 @@ export default function DashboardPage() {
                   </button>
                   {subaccount.status !== 'ready' && (
                     <button
-                      onClick={() => handleCreateSession(subaccount.location_id)}
+                      onClick={handleCreateSession}
                       className="w-full bg-blue-600 text-white hover:bg-blue-700 px-3 py-2 rounded-md text-sm font-medium"
                     >
                       Rescan QR Code

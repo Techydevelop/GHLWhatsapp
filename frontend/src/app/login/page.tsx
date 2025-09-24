@@ -22,7 +22,7 @@ export default function LoginPage() {
       await new Promise(resolve => setTimeout(resolve, 1000))
       toast.success('Login successful!')
       router.push('/dashboard')
-    } catch (error) {
+    } catch {
       toast.error('Login failed')
     } finally {
       setIsLoading(false)
