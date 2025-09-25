@@ -31,6 +31,11 @@ export default function SignupPage() {
     setIsLoading(true)
     
     try {
+      if (!supabase) {
+        toast.error('Supabase is not configured. Please set up environment variables.')
+        return
+      }
+
       const { data, error } = await supabase.auth.signUp({
         email,
         password,

@@ -43,6 +43,12 @@ export default function DashboardPage() {
 
   const checkUser = async () => {
     try {
+      if (!supabase) {
+        toast.error('Supabase is not configured. Please set up environment variables.')
+        router.push('/login')
+        return
+      }
+
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) {
         router.push('/login')
@@ -104,6 +110,10 @@ export default function DashboardPage() {
 
   const handleLogout = async () => {
     try {
+      if (!supabase) {
+        toast.error('Supabase is not configured')
+        return
+      }
       await supabase.auth.signOut()
       toast.success('Logged out successfully!')
       router.push('/')
