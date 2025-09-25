@@ -8,7 +8,7 @@ import {
   CheckCircleIcon, 
   ExclamationTriangleIcon,
   ArrowLeftIcon,
-  RefreshIcon
+  ArrowPathIcon
 } from '@heroicons/react/24/outline'
 import toast from 'react-hot-toast'
 
@@ -167,7 +167,7 @@ export default function QRPage() {
               disabled={isLoading}
               className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50"
             >
-              <RefreshIcon className="w-4 h-4 mr-2" />
+              <ArrowPathIcon className="w-4 h-4 mr-2" />
               Refresh
             </button>
           </div>
