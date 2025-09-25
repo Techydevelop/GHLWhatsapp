@@ -27,13 +27,24 @@ interface Subaccount {
   created_at: string;
 }
 
+interface Location {
+  id: string;
+  name: string;
+  address: string;
+  phone: string;
+  timezone: string;
+}
+
 export default function DashboardPage() {
   const [subaccounts, setSubaccounts] = useState<Subaccount[]>([])
   const [showConnectForm, setShowConnectForm] = useState(false)
-  const [newLocationId, setNewLocationId] = useState('')
+  const [showLocationSelector, setShowLocationSelector] = useState(false)
+  const [locations, setLocations] = useState<Location[]>([])
+  const [selectedLocation, setSelectedLocation] = useState<Location | null>(null)
   const [newName, setNewName] = useState('')
   const [user, setUser] = useState<any>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [isLoadingLocations, setIsLoadingLocations] = useState(false)
   const router = useRouter()
 
   useEffect(() => {
@@ -82,30 +93,101 @@ export default function DashboardPage() {
     }
   }
 
+  const loadLocations = async () => {
+    setIsLoadingLocations(true)
+    try {
+      // Get user token for API calls
+      if (!supabase) {
+        toast.error('Supabase is not configured')
+        return
+      }
+
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) {
+        toast.error('Please login first')
+        return
+      }
+
+      // Call backend API to get locations from LeadConnector
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/locations`, {
+        headers: { 
+          'Authorization': `Bearer ${session.access_token}`,
+          'Content-Type': 'application/json'
+        }
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch locations')
+      }
+
+      const data = await response.json()
+      setLocations(data.locations || [])
+      setShowLocationSelector(true)
+    } catch (error) {
+      console.error('Error loading locations:', error)
+      toast.error('Failed to load locations from LeadConnector')
+      
+      // Fallback to mock data for development
+      const mockLocations: Location[] = [
+        {
+          id: 'LOC001',
+          name: 'Main Office',
+          address: '123 Business St, City, State',
+          phone: '+1234567890',
+          timezone: 'America/New_York'
+        },
+        {
+          id: 'LOC002', 
+          name: 'Branch Office',
+          address: '456 Commerce Ave, City, State',
+          phone: '+1987654321',
+          timezone: 'America/Los_Angeles'
+        },
+        {
+          id: 'LOC003',
+          name: 'Remote Office',
+          address: '789 Remote Rd, City, State', 
+          phone: '+1555123456',
+          timezone: 'America/Chicago'
+        }
+      ]
+      
+      setLocations(mockLocations)
+      setShowLocationSelector(true)
+    } finally {
+      setIsLoadingLocations(false)
+    }
+  }
+
   const handleConnectSubaccount = async () => {
-    if (!newLocationId.trim()) {
-      toast.error('Please enter a location ID')
+    if (!selectedLocation) {
+      toast.error('Please select a location')
       return
     }
 
     try {
       const newSubaccount: Subaccount = {
         id: Date.now().toString(),
-        location_id: newLocationId.trim(),
-        name: newName.trim() || `Location ${newLocationId}`,
+        location_id: selectedLocation.id,
+        name: newName.trim() || selectedLocation.name,
         status: 'qr',
-        phone_number: null,
+        phone_number: selectedLocation.phone,
         created_at: new Date().toISOString()
       }
 
       setSubaccounts(prev => [newSubaccount, ...prev])
-      setShowConnectForm(false)
-      setNewLocationId('')
+      setShowLocationSelector(false)
+      setSelectedLocation(null)
       setNewName('')
-      toast.success('Subaccount connected successfully!')
+      toast.success(`Subaccount connected successfully for ${selectedLocation.name}!`)
     } catch (error) {
       toast.error('Failed to connect subaccount')
     }
+  }
+
+  const handleLocationSelect = (location: Location) => {
+    setSelectedLocation(location)
+    setNewName(location.name) // Pre-fill with location name
   }
 
   const handleLogout = async () => {
@@ -234,55 +316,90 @@ export default function DashboardPage() {
 
           {/* Main Content */}
           <div className="flex-1">
-            {showConnectForm && (
+            {/* Location Selector Modal */}
+            {showLocationSelector && (
               <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-                <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+                <div className="relative top-20 mx-auto p-5 border w-full max-w-2xl shadow-lg rounded-md bg-white">
                   <div className="mt-3">
-                    <h3 className="text-lg font-medium text-gray-900 mb-4">Connect New Location</h3>
-                    <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); handleConnectSubaccount(); }}>
-                      <div>
-                        <label htmlFor="locationId" className="block text-sm font-medium text-gray-700">
-                          Location ID *
-                        </label>
-                        <input
-                          type="text"
-                          id="locationId"
-                          value={newLocationId}
-                          onChange={(e) => setNewLocationId(e.target.value)}
-                          placeholder="Enter your GHL location ID"
-                          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                          required
-                        />
+                    <h3 className="text-lg font-medium text-gray-900 mb-4">Select Location from LeadConnector</h3>
+                    
+                    {locations.length === 0 ? (
+                      <div className="text-center py-8">
+                        <p className="text-gray-500">No locations found. Please check your LeadConnector connection.</p>
                       </div>
-                      <div>
-                        <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                          Display Name (Optional)
-                        </label>
-                        <input
-                          type="text"
-                          id="name"
-                          value={newName}
-                          onChange={(e) => setNewName(e.target.value)}
-                          placeholder="e.g., Main Office"
-                          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                        />
+                    ) : (
+                      <div className="space-y-3 max-h-96 overflow-y-auto">
+                        {locations.map((location) => (
+                          <div
+                            key={location.id}
+                            onClick={() => handleLocationSelect(location)}
+                            className={`p-4 border rounded-lg cursor-pointer transition-colors ${
+                              selectedLocation?.id === location.id
+                                ? 'border-blue-500 bg-blue-50'
+                                : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                            }`}
+                          >
+                            <div className="flex justify-between items-start">
+                              <div>
+                                <h4 className="font-medium text-gray-900">{location.name}</h4>
+                                <p className="text-sm text-gray-600 mt-1">{location.address}</p>
+                                <p className="text-sm text-gray-500 mt-1">📞 {location.phone}</p>
+                                <p className="text-xs text-gray-400 mt-1">ID: {location.id}</p>
+                              </div>
+                              {selectedLocation?.id === location.id && (
+                                <div className="text-blue-600">
+                                  <CheckCircleIcon className="w-5 h-5" />
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        ))}
                       </div>
-                      <div className="flex space-x-3 pt-4">
-                        <button
-                          type="button"
-                          onClick={() => setShowConnectForm(false)}
-                          className="flex-1 border border-gray-300 text-gray-700 hover:bg-gray-50 px-4 py-2 rounded-md text-sm font-medium"
-                        >
-                          Cancel
-                        </button>
-                        <button
-                          type="submit"
-                          className="flex-1 bg-blue-600 text-white hover:bg-blue-700 px-4 py-2 rounded-md text-sm font-medium"
-                        >
-                          Connect Location
-                        </button>
+                    )}
+
+                    {selectedLocation && (
+                      <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+                        <h4 className="font-medium text-gray-900 mb-2">Selected Location:</h4>
+                        <p className="text-sm text-gray-600">{selectedLocation.name}</p>
+                        <p className="text-xs text-gray-500">ID: {selectedLocation.id}</p>
+                        
+                        <div className="mt-4">
+                          <label htmlFor="displayName" className="block text-sm font-medium text-gray-700">
+                            Display Name (Optional)
+                          </label>
+                          <input
+                            type="text"
+                            id="displayName"
+                            value={newName}
+                            onChange={(e) => setNewName(e.target.value)}
+                            placeholder="Custom name for this location"
+                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                          />
+                        </div>
                       </div>
-                    </form>
+                    )}
+
+                    <div className="flex space-x-3 pt-6">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setShowLocationSelector(false)
+                          setSelectedLocation(null)
+                          setNewName('')
+                        }}
+                        className="flex-1 border border-gray-300 text-gray-700 hover:bg-gray-50 px-4 py-2 rounded-md text-sm font-medium"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleConnectSubaccount}
+                        disabled={!selectedLocation}
+                        className="flex-1 bg-blue-600 text-white hover:bg-blue-700 px-4 py-2 rounded-md text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        Connect Location
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -291,11 +408,12 @@ export default function DashboardPage() {
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-bold text-gray-900">Subaccounts</h2>
               <button
-                onClick={() => setShowConnectForm(true)}
-                className="bg-blue-600 text-white hover:bg-blue-700 px-4 py-2 rounded-md text-sm font-medium flex items-center"
+                onClick={loadLocations}
+                disabled={isLoadingLocations}
+                className="bg-blue-600 text-white hover:bg-blue-700 px-4 py-2 rounded-md text-sm font-medium flex items-center disabled:opacity-50"
               >
                 <PlusIcon className="w-4 h-4 mr-2" />
-                Connect Location
+                {isLoadingLocations ? 'Loading...' : 'Connect Location'}
               </button>
             </div>
 
@@ -307,11 +425,12 @@ export default function DashboardPage() {
                   Connect your first LeadConnector location to start using WhatsApp integration
                 </p>
                 <button
-                  onClick={() => setShowConnectForm(true)}
-                  className="bg-blue-600 text-white hover:bg-blue-700 px-4 py-2 rounded-md text-sm font-medium flex items-center mx-auto"
+                  onClick={loadLocations}
+                  disabled={isLoadingLocations}
+                  className="bg-blue-600 text-white hover:bg-blue-700 px-4 py-2 rounded-md text-sm font-medium flex items-center mx-auto disabled:opacity-50"
                 >
                   <PlusIcon className="w-4 h-4 mr-2" />
-                  Connect Your First Location
+                  {isLoadingLocations ? 'Loading...' : 'Connect Your First Location'}
                 </button>
               </div>
             ) : (

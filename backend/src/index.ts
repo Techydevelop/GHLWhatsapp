@@ -9,6 +9,7 @@ import subaccountRoutes from './routes/subaccounts';
 import sessionRoutes from './routes/sessions';
 import messageRoutes from './routes/messages';
 import providerRoutes from './routes/provider';
+import locationRoutes from './routes/locations';
 
 // Load environment variables
 dotenv.config();
@@ -55,6 +56,7 @@ app.use('/admin', subaccountRoutes);
 app.use('/location', sessionRoutes);
 app.use('/messages', messageRoutes);
 app.use('/provider', providerRoutes);
+app.use('/locations', locationRoutes);
 
 // Error handling middleware
 app.use((err: any, req: any, res: any, next: any) => {
