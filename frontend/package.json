@@ -11,7 +11,11 @@
   "dependencies": {
     "react": "^18",
     "react-dom": "^18",
-    "next": "14.2.33"
+    "next": "14.2.33",
+    "@supabase/supabase-js": "^2.38.4",
+    "@supabase/ssr": "^0.0.10",
+    "@heroicons/react": "^2.2.0",
+    "react-hot-toast": "^2.4.1"
   },
   "devDependencies": {
     "typescript": "^5",
